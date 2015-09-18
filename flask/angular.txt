@@ -1,0 +1,44 @@
+
+$scope.$on('$viewContentLoaded', function() {
+        if (localStorageService.get('key') == undefined)
+        {
+            $rootScope.logged_in = false;
+            $scope.openLoginWindow();
+        }
+        else
+        {
+            $rootScope.key = localStorageService.get('key');
+            $rootScope.secret = localStorageService.get('secret');
+            $http.post('/login', {"key" : $rootScope.key, "secret" : $rootScope.secret})
+            .success(function(response){
+                if (response.success)
+                {
+                $rootScope.user_id = response.user_id;
+                $rootScope.$broadcast("key_set");
+                $rootScope.logged_in = true;
+
+                [...further code while logged in ...]
+
+
+$scope.login = function(){
+        $http.post('/login', $scope.user_to_login)
+        .success(function(response){
+            if (response.success)
+            {
+                $rootScope.key = response.key;
+                $rootScope.secret = response.secret;
+                $rootScope.user_id = response.user_id;
+                $rootScope.$broadcast("key_set");
+                if ($scope.user_to_login.remember)
+                {
+                    localStorageService.add('key', $rootScope.key);
+                    localStorageService.add('secret', $rootScope.secret);
+                }
+                $modalInstance.close(response);
+            }
+            else
+            {
+                ///
+            }
+        });
+    };
